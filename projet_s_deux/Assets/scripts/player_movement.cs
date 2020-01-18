@@ -22,7 +22,7 @@ public class player_movement : MonoBehaviour
         //augmenter la vitesse de la chute
         if (grounded && fallspeed.y < 0)
         {
-            fallspeed.y = -2f;
+            fallspeed.y = -2f ;
         }
 
         //Appui des touches de déplacement
