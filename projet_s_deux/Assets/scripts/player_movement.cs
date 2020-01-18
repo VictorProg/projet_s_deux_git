@@ -2,35 +2,67 @@
 
 public class player_movement : MonoBehaviour
 {
-    public CharacterController character;
-    public float speed = 12f;
-    float gravity = -10f;
-    public Vector3 velocity;
+    public CharacterController characterController;
+    float run = 10f;
+    float sprint = 50f ;
+    float walk = 1f;
+    float movementspeed = 10f;
+    float gravity = -20f;
+    Vector3 fallspeed;
+    float jumpHeight = 2f;
 
     public Transform groundCheck;
-    public float groundDistance = 0.1f;
+    float groundDistance = 0.4f;
     public LayerMask groundMask;
     bool grounded;
     void Update()
     {
-        grounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-        if (grounded && velocity.y < 0)
+        grounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask); //vrai si le joueur est en contact avec un objet de Layer "ground"
+
+        //augmenter la vitesse de la chute
+        if (grounded && fallspeed.y < 0)
         {
-            velocity.y = -2f;
+            fallspeed.y = -2f;
         }
 
-        float x = Input.GetAxis("Horizontal"); //récupérer l'orientation verticale de la caméra
-        float z = Input.GetAxis("Vertical"); //récupérer l'orientation horizontale de la caméra
+        //Appui des touches de déplacement
+        float appuiGaucheDroite = Input.GetAxis("Horizontal"); //gauche/droite
+        float appuiAvantArriere = Input.GetAxis("Vertical"); //avant/arrière 
 
-        //déterminer dans quelle direction se déplacer
-        Vector3 move = transform.right * x + transform.forward * z;
+        //déterminer comment se déplacer
+        Vector3 move = transform.right * appuiGaucheDroite + transform.forward * appuiAvantArriere;
 
         //se déplacer
-        character.Move(move * speed * Time.deltaTime);
+        characterController.Move(move * movementspeed * Time.deltaTime);
 
         //appliquer la gravité
-        velocity.y += gravity * Time.deltaTime;
+        fallspeed.y += gravity * Time.deltaTime;
+        characterController.Move(fallspeed * Time.deltaTime);
 
-        character.Move(velocity * Time.deltaTime);
+        //sauter
+        if (Input.GetKeyDown("space") && grounded)
+        {
+            fallspeed.y = Mathf.Sqrt(jumpHeight * -1f * gravity);
+        }
+
+        //rétablir vitesse normale (run)
+        if (Input.GetKeyUp("x") || Input.GetKeyUp("c"))
+        {
+            movementspeed = run;
+        }
+
+        //courir
+        if (Input.GetKeyDown("x") && appuiAvantArriere > 0)
+        {
+            movementspeed = sprint;
+        }
+
+        //marcher
+        if (Input.GetKeyDown("c"))
+        {
+            movementspeed = walk;
+        }
+
+        
     }
 }
