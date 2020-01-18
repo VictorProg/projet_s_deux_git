@@ -3,9 +3,9 @@
 public class player_movement : MonoBehaviour
 {
     public CharacterController characterController;
-    float run = 10f;
-    float sprint = 50f ;
-    float walk = 1f;
+    float runspeed = 10f;
+    float sprintspeed = 20f ;
+    float walkspeed = 5f;
     float movementspeed = 10f;
     float gravity = -20f;
     Vector3 fallspeed;
@@ -45,24 +45,11 @@ public class player_movement : MonoBehaviour
             fallspeed.y = Mathf.Sqrt(jumpHeight * -1f * gravity);
         }
 
-        //rétablir vitesse normale (run)
-        if (Input.GetKeyUp("x") || Input.GetKeyUp("c"))
-        {
-            movementspeed = run;
-        }
 
-        //courir
-        if (Input.GetKeyDown("x") && appuiAvantArriere > 0)
-        {
-            movementspeed = sprint;
-        }
+        //déterminer la vitesse de déplacement
+        bool sprint = Input.GetKey(KeyCode.LeftShift) && (appuiAvantArriere > 0);
+        bool walk = Input.GetKey(KeyCode.LeftAlt);
 
-        //marcher
-        if (Input.GetKeyDown("c"))
-        {
-            movementspeed = walk;
-        }
-
-        
+        movementspeed = ((sprint) ? sprintspeed : (walk) ? walkspeed : runspeed);
     }
 }
